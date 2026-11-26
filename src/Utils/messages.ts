@@ -2,6 +2,7 @@ import { Boom } from '@hapi/boom'
 import { randomBytes } from 'crypto'
 import { promises as fs } from 'fs'
 import { type Transform } from 'stream'
+import { prepareRichResponseMessage } from './rich-message-utils'
 import { proto } from '../../WAProto/index.js'
 import {
 	CALL_AUDIO_PREFIX,
@@ -24,7 +25,8 @@ import type {
 	WAMessage,
 	WAMessageContent,
 	WAMessageKey,
-	WATextMessage
+	WATextMessage,
+	RichResponseMessageContent
 } from '../Types'
 import { WAMessageStatus, WAProto } from '../Types'
 import { isJidGroup, isJidNewsletter, isJidStatusBroadcast, jidNormalizedUser } from '../WABinary'
@@ -397,7 +399,14 @@ export const generateWAMessageContent = async (
 	options: MessageContentGenerationOptions
 ) => {
 	let m: WAMessageContent = {}
-	if (hasNonNullishProperty(message, 'text')) {
+	if (
+		hasNonNullishProperty(message, 'richResponse') ||
+		hasNonNullishProperty(message, 'code') ||
+		hasNonNullishProperty(message, 'links') ||
+		hasNonNullishProperty(message, 'table')
+	) {
+		m = prepareRichResponseMessage(message as RichResponseMessageContent)
+	} else if (hasNonNullishProperty(message, 'text')) {
 		const extContent = { text: message.text } as WATextMessage
 
 		let urlInfo = message.linkPreview

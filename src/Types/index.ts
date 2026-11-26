@@ -9,6 +9,7 @@ export * from './Events'
 export * from './Product'
 export * from './Call'
 export * from './Signal'
+export * from './RichType'
 export * from './Mex'
 
 import type { AuthenticationState } from './Auth'

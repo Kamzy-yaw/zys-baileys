@@ -5,6 +5,7 @@ import type { MediaType } from '../Defaults'
 import type { BinaryNode } from '../WABinary'
 import type { GroupMetadata } from './GroupMetadata'
 import type { CacheStore } from './Socket'
+import type { RichResponseMessageContent } from './RichType'
 
 // export the WAMessage Prototypes
 export { proto as WAProto }
@@ -281,6 +282,7 @@ export type AnyRegularMessageContent = (
 			body?: string
 			footer?: string
 	  }
+	| RichResponseMessageContent
 	| SharePhoneNumber
 	| RequestPhoneNumber
 ) &
