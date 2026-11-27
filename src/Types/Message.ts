@@ -4,8 +4,8 @@ import { proto } from '../../WAProto/index.js'
 import type { MediaType } from '../Defaults'
 import type { BinaryNode } from '../WABinary'
 import type { GroupMetadata } from './GroupMetadata'
-import type { CacheStore } from './Socket'
 import type { RichResponseMessageContent } from './RichType'
+import type { CacheStore } from './Socket'
 
 // export the WAMessage Prototypes
 export { proto as WAProto }
@@ -230,10 +230,33 @@ export type WASendableProduct = Omit<proto.Message.ProductMessage.IProductSnapsh
 	productImage: WAMediaUpload
 }
 
+/**
+ * An experimental HTML card. The markup is sent verbatim and executes on recipient devices.
+ * Only provide trusted markup; never interpolate secrets or untrusted values.
+ * WhatsApp Android rendering has not been verified for this Whiskey implementation.
+ */
+export type HtmlAppMessageContent = {
+	markup: string
+	/** Disclaimer label shown with the forwarded card. */
+	title?: string
+	/** Fixed card height in CSS pixels, from 1 through 4096. */
+	height?: number
+	/** Send the reference-style identical edit after the initial relay. Disabled unless explicitly true. */
+	bypassDownload?: boolean
+	/** Maximum UTF-8 bytes in markup. Defaults to 256 KB. */
+	maxBytes?: number
+}
+
 export type AnyRegularMessageContent = (
 	| ({
 			text: string
 			linkPreview?: WAUrlInfo | null
+			nativeFlow?: Array<{
+				text: string
+				id: string
+				icon?: string
+			}>
+			footer?: string
 	  } & Mentionable &
 			Contextable &
 			Editable)
@@ -282,6 +305,7 @@ export type AnyRegularMessageContent = (
 			body?: string
 			footer?: string
 	  }
+	| { htmlApp: HtmlAppMessageContent }
 	| RichResponseMessageContent
 	| SharePhoneNumber
 	| RequestPhoneNumber

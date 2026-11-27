@@ -27,6 +27,7 @@ import {
 	generateMessageIDV2,
 	generateParticipantHashV2,
 	generateWAMessage,
+	generateWAMessageFromContent,
 	getStatusCodeForMediaRetry,
 	getUrlFromDirectPath,
 	getWAUploadToServer,
@@ -35,8 +36,10 @@ import {
 	parseAndInjectE2ESessions,
 	unixTimestampSeconds
 } from '../Utils'
+import { createHtmlAppDownloadBypassEdit } from '../Utils/html-app'
 import { getUrlInfo } from '../Utils/link-preview'
 import { makeKeyedMutex, makeMutex } from '../Utils/make-mutex'
+import { captureRelayProtoDiagnostic } from '../Utils/relay-proto-diagnostic'
 import { getMessageReportingToken, shouldIncludeReportingToken } from '../Utils/reporting-utils'
 import {
 	buildMergedTcTokenIndexWrite,
@@ -68,6 +71,7 @@ import {
 	S_WHATSAPP_NET
 } from '../WABinary'
 import { USyncQuery, USyncUser } from '../WAUSync'
+import { getNativeFlowBizBinaryNode } from './native-flow-biz-node'
 import { makeNewsletterSocket } from './newsletter'
 
 export const makeMessagesSocket = (config: SocketConfig) => {
@@ -574,6 +578,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 					}
 
 					const bytes = encodeWAMessage(msgToEncrypt)
+					captureRelayProtoDiagnostic(msgToEncrypt, bytes, logger)
 					const mutexKey = jid
 
 					const node = await encryptionMutex.mutex(mutexKey, async () => {
@@ -759,6 +764,7 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 				}
 
 				const bytes = encodeWAMessage(patched)
+				captureRelayProtoDiagnostic(patched, bytes, logger)
 				reportingMessage = patched
 				const groupAddressingMode = additionalAttributes?.['addressing_mode'] || groupData?.addressingMode || 'lid'
 				const groupSenderIdentity = groupAddressingMode === 'lid' && meLid ? meLid : meId
@@ -959,6 +965,18 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 							}
 						})
 					: encodeWAMessage(messageToSend)
+				captureRelayProtoDiagnostic(
+					isMe
+						? {
+							deviceSentMessage: {
+								destinationJid,
+								message: messageToSend
+							}
+						}
+						: messageToSend,
+					encodedMessageToSend,
+					logger
+				)
 
 				const { type, ciphertext: encryptedContent } = await signalRepository.encryptMessage({
 					data: encodedMessageToSend,
@@ -1090,6 +1108,17 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 
 			if (additionalNodes && additionalNodes.length > 0) {
 				;(stanza.content as BinaryNode[]).push(...additionalNodes)
+			}
+
+			if (process.env.BAILEYS_NATIVE_FLOW_BIZ_NODE_AB === '1') {
+				const normalizedMessage = normalizeMessageContent(message)
+				if (
+					normalizedMessage?.interactiveMessage?.nativeFlowMessage &&
+					!binaryNodeContent.some(node => node.tag === 'biz')
+				) {
+					const bizNode = getNativeFlowBizBinaryNode(normalizedMessage)
+					if (bizNode) binaryNodeContent.push(bizNode)
+				}
 			}
 
 			logger.debug({ msgId }, `sending message to ${participants.length} devices`)
@@ -1406,6 +1435,26 @@ export const makeMessagesSocket = (config: SocketConfig) => {
 					statusJidList: options.statusJidList,
 					additionalNodes
 				})
+				if (
+					'htmlApp' in content &&
+					content.htmlApp.bypassDownload === true &&
+					fullMsg.key.id &&
+					fullMsg.message
+				) {
+					const editMsg = generateWAMessageFromContent(
+						jid,
+						createHtmlAppDownloadBypassEdit(jid, fullMsg.key.id, fullMsg.message),
+						{ userJid, messageId: generateMessageIDV2(sock.user?.id) }
+					)
+					if (editMsg.key.id && editMsg.message) {
+						try {
+							await relayMessage(jid, editMsg.message, { messageId: editMsg.key.id })
+						} catch {
+							// The initial card is already sent; this edit only suppresses the client download prompt.
+						}
+					}
+				}
+
 				if (config.emitOwnEvents) {
 					process.nextTick(async () => {
 						await messageMutex.mutex(() => upsertMessage(fullMsg, 'append'))

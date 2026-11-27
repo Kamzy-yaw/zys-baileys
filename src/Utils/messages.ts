@@ -2,7 +2,6 @@ import { Boom } from '@hapi/boom'
 import { randomBytes } from 'crypto'
 import { promises as fs } from 'fs'
 import { type Transform } from 'stream'
-import { prepareRichResponseMessage } from './rich-message-utils'
 import { proto } from '../../WAProto/index.js'
 import {
 	CALL_AUDIO_PREFIX,
@@ -21,17 +20,25 @@ import type {
 	MessageGenerationOptionsFromContent,
 	MessageUserReceipt,
 	MessageWithContextInfo,
+	RichResponseMessageContent,
 	WAMediaUpload,
 	WAMessage,
 	WAMessageContent,
 	WAMessageKey,
-	WATextMessage,
-	RichResponseMessageContent
+	WATextMessage
 } from '../Types'
 import { WAMessageStatus, WAProto } from '../Types'
-import { isJidGroup, isJidNewsletter, isJidStatusBroadcast, jidNormalizedUser } from '../WABinary'
+import {
+	isJidGroup,
+	isJidNewsletter,
+	isJidStatusBroadcast,
+	isLidUser,
+	isPnUser,
+	jidNormalizedUser
+} from '../WABinary'
 import { sha256 } from './crypto'
 import { generateMessageIDV2, getKeyAuthor, unixTimestampSeconds } from './generics'
+import { prepareHtmlAppMessage } from './html-app'
 import type { ILogger } from './logger'
 import {
 	downloadContentFromMessage,
@@ -43,6 +50,7 @@ import {
 	type MediaDownloadOptions
 } from './messages-media'
 import { shouldIncludeReportingToken } from './reporting-utils'
+import { prepareRichResponseMessage } from './rich-message-utils'
 
 type ExtractByKey<T, K extends PropertyKey> = T extends Record<K, any> ? T : never
 type RequireKey<T, K extends keyof T> = T & {
@@ -399,13 +407,40 @@ export const generateWAMessageContent = async (
 	options: MessageContentGenerationOptions
 ) => {
 	let m: WAMessageContent = {}
-	if (
+	if (hasNonNullishProperty(message, 'htmlApp')) {
+		m = prepareHtmlAppMessage(message.htmlApp)
+	} else if (
 		hasNonNullishProperty(message, 'richResponse') ||
 		hasNonNullishProperty(message, 'code') ||
 		hasNonNullishProperty(message, 'links') ||
 		hasNonNullishProperty(message, 'table')
 	) {
 		m = prepareRichResponseMessage(message as RichResponseMessageContent)
+	} else if ('nativeFlow' in message && message.nativeFlow) {
+		const buttons = message.nativeFlow.map(button => ({
+			name: 'quick_reply',
+			buttonParamsJson: JSON.stringify({
+				display_text: button.text,
+				id: button.id,
+				...(button.icon ? { icon: button.icon.toUpperCase() } : {})
+			})
+		}))
+
+		m.interactiveMessage = {
+			body: {
+				text: message.text
+			},
+			...(message.footer
+				? {
+					footer: { text: message.footer }
+				}
+				: {}),
+			nativeFlowMessage: {
+				buttons,
+				messageParamsJson: JSON.stringify({}),
+				messageVersion: 3
+			}
+		}
 	} else if (hasNonNullishProperty(message, 'text')) {
 		const extContent = { text: message.text } as WATextMessage
 
@@ -753,6 +788,20 @@ export const generateWAMessageFromContent = (
 			expiration: options.ephemeralExpiration || WA_DEFAULT_EPHEMERAL
 			//ephemeralSettingTimestamp: options.ephemeralOptions.eph_setting_ts?.toString()
 		}
+	}
+
+	// Add device list metadata for private PN/LID messages
+	// when a message secret is present.
+	if (
+		message.messageContextInfo?.messageSecret &&
+		(isPnUser(jid) || isLidUser(jid))
+	) {
+		message.messageContextInfo.deviceListMetadata = {
+			recipientKeyHash: randomBytes(10),
+			recipientTimestamp: unixTimestampSeconds()
+		}
+
+		message.messageContextInfo.deviceListMetadataVersion = 2
 	}
 
 	message = WAProto.Message.create(message)
