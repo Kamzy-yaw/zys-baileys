@@ -47,7 +47,7 @@ const sock = makeWASocket({ auth: state })
 
 sock.ev.on('creds.update', saveCreds)
 sock.ev.on('connection.update', ({ connection, qr, lastDisconnect }) => {
-  if (qr) console.log('Scan this QR code to log in:', qr)
+  if (qr) console.log('QR login string received; render it as a QR code to scan:', qr)
   if (connection === 'open') console.log('WhatsApp connection opened')
   if (connection === 'close') console.error('WhatsApp connection closed:', lastDisconnect?.error)
 })
@@ -60,6 +60,8 @@ sock.ev.on('messages.upsert', ({ messages, type }) => {
   }
 })
 ```
+
+The `qr` value is the QR payload; display it with a QR renderer so it can be scanned.
 
 Send ordinary messages through the existing `sendMessage()` pattern:
 

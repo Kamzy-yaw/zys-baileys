@@ -1,6 +1,6 @@
  <div align="center">
   <img
-    src="https://raw.githubusercontent.com/Kamzy-yaw/zys-baileys/refs/heads/feature/rich-response/zysbaileys-banner.png"
+    src="zysbaileys-banner.png"
     alt="ZysBaileys"
     width="100%"
   />
@@ -26,14 +26,14 @@
 
 **ZysBaileys** is an experimental fork of [Baileys](https://github.com/WhiskeySockets/Baileys), a WebSockets-based TypeScript library for interacting with the WhatsApp Web API.
 
-This fork explores additional messaging capabilities, custom message structures, and interactive experiences while maintaining the familiar Baileys development workflow.
+This fork explores additional messaging capabilities and custom message structures while retaining familiar core Baileys socket and messaging patterns.
 
 ## Features
 
-- **Rich Response** — Extended WhatsApp messages with formatted content and code blocks.
+- **Rich Response** — Experimental structured WhatsApp messages with formatted content and code blocks.
 - **HTML App** — Experimental HTML-based interactive experiences.
 - **Native Flow** — Experimental support for interactive native-flow messages.
-- **Baileys Compatibility** — Built on the Baileys codebase and its existing messaging architecture.
+- **Baileys Foundation** — Built on the Baileys codebase; check compatibility with the specific release and integrations you use.
 
 ## Documentation
 
@@ -41,12 +41,13 @@ Explore the detailed documentation for each feature:
 
 | Documentation | Description |
 | --- | --- |
-| [Rich Response](../documentation/rich-response.md) | Structured messages, code blocks, tables, and links. |
-| [HTML App](../documentation/html-app.md) | Experimental HTML-based interactive experiences. |
-| [Native Flow](../documentation/native-flow.md) | Experimental native-flow interactive messages. |
-| [Migration Guide](../documentation/migration.md) | Guide for migrating existing Baileys projects to ZysBaileys. |
+| [Rich Response](documentation/rich-response.md) | Experimental structured messages, code blocks, tables, and links. |
+| [HTML App](documentation/html-app.md) | Experimental HTML-based interactive content. |
+| [Native Flow](documentation/native-flow.md) | Experimental native-flow messages; rendering and interaction are unconfirmed. |
+| [Migration Guide](documentation/migration.md) | Guide for migrating existing Baileys projects to ZysBaileys. |
 
 For implementation details, examples, and limitations, refer to the corresponding documentation.
+Browse the [documentation index](documentation/README.md) for all guides.
 
 ## Rich Response
 
@@ -136,6 +137,7 @@ await sock.sendMessage(jid, {
 | `table` | Two-dimensional table data |
 | `links` | Link collection |
 | `headerText` | Message header |
+| `contentText` | Message body text |
 | `title` | Content title |
 | `footerText` | Footer text |
 
@@ -162,16 +164,19 @@ Or add it to your `package.json`:
 ## Quick Start
 
 ```js
-import makeWASocket from '@whiskeysockets/baileys'
+import makeWASocket, { useMultiFileAuthState } from '@whiskeysockets/baileys'
 
-const sock = makeWASocket({
-    // Your connection configuration
-})
+const { state, saveCreds } = await useMultiFileAuthState('./auth_info')
+const sock = makeWASocket({ auth: state })
 
-sock.ev.on('connection.update', (update) => {
-    console.log('Connection update:', update)
+sock.ev.on('creds.update', saveCreds)
+sock.ev.on('connection.update', ({ connection, qr }) => {
+  if (qr) console.log('QR login string received; render it as a QR code to scan:', qr)
+  if (connection === 'open') console.log('WhatsApp connection opened')
 })
 ```
+
+The `qr` value is the QR payload; display it with a QR renderer so it can be scanned.
 
 For authentication, message handling, and advanced usage, refer to the documentation inherited from the original Baileys project.
 
