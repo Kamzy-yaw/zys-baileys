@@ -53,23 +53,22 @@ async function hello() {
 })
 ```
 
-Supported languages:
+Common language aliases supported by the tokenizer:
 
-- JavaScript
-- TypeScript
-- Python
-- Bash
-- PowerShell
-- CSS
-- HTML
-- Go
-- C++
-- C
-- C#
-- Rust
-- CMD
-
-Common aliases such as `js`, `ts`, `py`, `sh`, and `ps1` are also supported.
+| Alias | Normalized Language |
+|---|---|
+| `js`, `jsx` | JavaScript |
+| `ts`, `tsx` | TypeScript |
+| `py` | Python |
+| `golang` | Go |
+| `c++` | C++ |
+| `h` | C |
+| `rs` | Rust |
+| `cs` | C# |
+| `html5` | HTML |
+| `sh`, `zsh` | Bash |
+| `bat` | CMD |
+| `ps1` | PowerShell |
 
 ## Tables
 
@@ -112,6 +111,8 @@ A link must provide a URL through `url` or through one of its `sources` entries.
 await sock.sendMessage(jid, {
   headerText: 'Project Update',
   contentText: 'ZysBaileys is an experimental Baileys fork.',
+  code: 'console.log("Hello from ZysBaileys!")',
+  language: 'javascript',
   footerText: 'Powered by ZysBaileys.'
 })
 ```
@@ -126,6 +127,28 @@ Supported item types:
 - Code: `{ code: [...], language: 'javascript' }`
 - Table: `{ table: [...], title: '...' }`
 
+For tables inside `richResponse`, each row must use the `RichResponseTableRow` structure:
+
+- `isHeading`: Whether the row is a heading.
+- `items`: Array of cell values.
+
+Example:
+
+```js
+await sock.sendMessage(jid, {
+  richResponse: [
+    {
+      table: [
+        { isHeading: true, items: ['Feature', 'Status'] },
+        { isHeading: false, items: ['Rich Response', 'Available'] }
+      ]
+    }
+  ]
+})
+```
+
+This differs from the top-level `table` property, which accepts a two-dimensional string array.
+
 Code items inside `richResponse` require `RichCodeBlock[]`, unlike the top-level `code` property which accepts a string.
 
 ## Important Notes
@@ -136,6 +159,8 @@ Code items inside `richResponse` require `RichCodeBlock[]`, unlike the top-level
 - `disclaimerText` is currently defined in the type but is not processed by the Rich Response utility.
 - The separate `code`, `links`, and `table` properties are handled as alternatives, not combined automatically.
 - Some advanced rendering behavior may depend on WhatsApp client support.
+- `headerText`, `contentText`, and `footerText` are handled by the non-`richResponse` branch.
+- When `richResponse` is provided, these separate properties are not automatically included in the generated content.
 
 ## Credits
 
