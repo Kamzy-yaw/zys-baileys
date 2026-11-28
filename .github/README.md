@@ -33,8 +33,20 @@ This fork explores additional messaging capabilities, custom message structures,
 - **Rich Response** — Extended WhatsApp messages with formatted content and code blocks.
 - **HTML App** — Experimental HTML-based interactive experiences.
 - **Native Flow** — Experimental support for interactive native-flow messages.
-- **Baileys Compatibility** — Built on the Baileys codebase and its existing messaging architecture.
+- **Baileys Compatibility** — Built on the Baileys codebase and its existing messaging architecture
 
+## Documentation
+
+Explore the detailed documentation for each feature:
+
+| Documentation | Description |
+| --- | --- |
+| [Rich Response](documentation/rich-response.md) | Structured messages, code blocks, tables, and links. |
+| [HTML App](documentation/html-app.md) | Experimental HTML-based interactive experiences. |
+| [Native Flow](documentation/native-flow.md) | Experimental native-flow interactive messages. |
+| [Migration Guide](documentation/migration.md) | Guide for migrating existing Baileys projects to ZysBaileys. |
+
+For implementation details, examples, and limitations, refer to the corresponding documentation.
 
 ## Rich Response
 

@@ -1,5 +1,9 @@
  <div align="center">
-  <img src="zysbaileys-banner.png" alt="ZysBaileys" width="100%" />
+  <img
+  src="https://raw.githubusercontent.com/Kamzy-yaw/zys-baileys/refs/heads/feature/rich-response/zysbaileys-banner.png"
+  alt="ZysBaileys"
+  width="100%"
+/>
   
   <h3>Extending WhatsApp Web Experiences.</h3>
 
@@ -30,6 +34,101 @@ This fork explores additional messaging capabilities, custom message structures,
 - **HTML App** — Experimental HTML-based interactive experiences.
 - **Native Flow** — Experimental support for interactive native-flow messages.
 - **Baileys Compatibility** — Built on the Baileys codebase and its existing messaging architecture.
+
+
+## Rich Response
+
+Rich Response extends WhatsApp messaging with structured content, including formatted text, syntax-highlighted code blocks, tables, and links.
+
+### Code Example
+
+Send a code block with a specified programming language:
+
+```js
+await sock.sendMessage(jid, {
+    headerText: 'JavaScript Example',
+    code: 'const message = "Hello World";\nconsole.log(message);',
+    language: 'javascript'
+})
+```
+
+### Rich Content
+
+Combine multiple content items in a single Rich Response message:
+
+```js
+await sock.sendMessage(jid, {
+    richResponse: [
+        {
+            text: 'Welcome to ZysBaileys!'
+        },
+        {
+            language: 'javascript',
+            code: [
+                {
+                    highlightType: 1,
+                    codeContent: 'const'
+                },
+                {
+                    highlightType: 0,
+                    codeContent: ' message = "Hello World";'
+                }
+            ]
+        }
+    ]
+})
+```
+
+### Tables
+
+Send structured tabular content:
+
+```js
+await sock.sendMessage(jid, {
+    headerText: 'Feature Comparison',
+    title: 'ZysBaileys Features',
+    table: [
+        ['Feature', 'Status'],
+        ['Rich Response', 'Available'],
+        ['Code Blocks', 'Available'],
+        ['HTML App', 'Experimental']
+    ]
+})
+```
+
+### Links
+
+Send links with titles and display names:
+
+```js
+await sock.sendMessage(jid, {
+    headerText: 'Useful Links',
+    links: [
+        {
+            text: 'Documentation',
+            url: 'https://example.com',
+            title: 'Project Documentation',
+            displayName: 'Documentation'
+        }
+    ]
+})
+```
+
+### Supported Content Properties
+
+| Property | Description |
+| --- | --- |
+| `richResponse` | Multiple structured content items |
+| `code` | Code block content |
+| `language` | Programming language for code highlighting |
+| `table` | Two-dimensional table data |
+| `links` | Link collection |
+| `headerText` | Message header |
+| `title` | Content title |
+| `footerText` | Footer text |
+
+**Note:** Rich Response rendering may vary depending on the WhatsApp client and version. Test compatibility with your target devices.
+
 
 ## Installation
 
@@ -77,11 +176,17 @@ ZysBaileys is an unofficial, independently maintained fork. It is not affiliated
 
 Use this project responsibly and comply with WhatsApp's Terms of Service. Do not use it for spam, abusive automation, or unauthorized activities.
 
+
 ## Credits
 
-ZysBaileys is based on [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys).
+ZysBaileys builds upon and adapts work from these open-source projects:
 
-Original project contributors retain their respective copyright notices. See the license information below.
+- **[WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys)** — Original Baileys library and upstream foundation.
+- **[Sairidev/Baileys](https://github.com/sairidev/baileys-new)** — Source of the Rich Response implementation adapted in ZysBaileys.
+- **[Zeative/Zaileys](https://github.com/zeative/zaileys)** — Source of the HTML App implementation adapted in ZysBaileys.
+
+We sincerely appreciate the original authors, maintainers, and contributors for their work.
+
+Original copyright notices and applicable license terms are preserved. See the [MIT License](LICENSE) for details.
 
 ---
-
