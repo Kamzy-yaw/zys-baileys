@@ -1,64 +1,86 @@
-<h1><img alt="Baileys logo" src="https://raw.githubusercontent.com/WhiskeySockets/Baileys/refs/heads/master/Media/logo.png" height="75"/></h1>
+ <div align="center">
+  <img src="zysbaileys-banner.png" alt="ZysBaileys" width="100%" />
+  
+  <h3>Extending WhatsApp Web Experiences.</h3>
+
+  <p>
+    An experimental Baileys fork focused on extended messaging capabilities,
+    interactive experiences, and custom WhatsApp Web functionality.
+  </p>
+
+  <p>
+    <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+    <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white" />
+    <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" />
+    <img src="https://img.shields.io/badge/Status-Experimental-orange?style=flat-square" />
+  </p>
+</div>
+
+---
+
+## About
+
+**ZysBaileys** is an experimental fork of [Baileys](https://github.com/WhiskeySockets/Baileys), a WebSockets-based TypeScript library for interacting with the WhatsApp Web API.
+
+This fork explores additional messaging capabilities, custom message structures, and interactive experiences while maintaining the familiar Baileys development workflow.
+
+## Features
+
+- **Rich Response** — Extended WhatsApp messages with formatted content and code blocks.
+- **HTML App** — Experimental HTML-based interactive experiences.
+- **Native Flow** — Experimental support for interactive native-flow messages.
+- **Baileys Compatibility** — Built on the Baileys codebase and its existing messaging architecture.
+
+## Installation
+
+Install ZysBaileys directly from GitHub:
+
+```bash
+npm install github:Kamzy-yaw/zys-baileys
+```
+
+Or add it to your `package.json`:
+
+```json
+{
+  "dependencies": {
+    "@whiskeysockets/baileys": "github:Kamzy-yaw/zys-baileys"
+  }
+}
+```
+
+## Quick Start
+
+```js
+import makeWASocket from '@whiskeysockets/baileys'
+
+const sock = makeWASocket({
+    // Your connection configuration
+})
+
+sock.ev.on('connection.update', (update) => {
+    console.log('Connection update:', update)
+})
+```
+
+For authentication, message handling, and advanced usage, refer to the documentation inherited from the original Baileys project.
 
 
-> [!CAUTION]
-> NOTICE OF BREAKING CHANGE.
->
-> As of 7.0.0, multiple breaking changes were introduced into the library.
->
-> Please check out https://whiskey.so/migrate-latest for more information.
 
-Baileys is a WebSockets-based TypeScript library for interacting with the WhatsApp Web API.
+## Project Status
 
-Join the WhiskeySockets community via the link: https://whiskey.so/discord
+ZysBaileys is actively experimental. Features may change, behave differently across WhatsApp clients, or require further testing.
 
-# Usage & Guide
+## Disclaimer
 
-> [!IMPORTANT]
-> The new guide is a work in progress. Expect missing pages/content. [Report missing or incorrect content.](https://github.com/WhiskeySockets/baileys.wiki-site/issues/new)
->
-> **You can still access the old guide here:** [README.md](https://github.com/WhiskeySockets/Baileys/tree/master/README.md), or the [NPM homepage](https://npmjs.com/package/baileys).
+ZysBaileys is an unofficial, independently maintained fork. It is not affiliated with, endorsed by, or officially connected to WhatsApp, Meta, or WhiskeySockets.
 
-The new guide is posted at https://baileys.wiki .
+Use this project responsibly and comply with WhatsApp's Terms of Service. Do not use it for spam, abusive automation, or unauthorized activities.
 
-# Get Support
+## Credits
 
-If you'd like business to enterprise-level support from Rajeh, the current maintainer of Baileys, you can book a video chat. Book a 1 hour time slot by contacting him on Discord or pre-ordering [here](https://purpshell.dev/book). The earlier you pre-order the better, as his time slots usually fill up very quickly. He offers immense value per hour and will answer all your questions before the time runs out.
+ZysBaileys is based on [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys).
 
-If you are a business, we encourage you to contribute back to the high development costs of the project and to feed the maintainers who dump tens of hours a week on this. You can do so by booking meetings or sponsoring below. All support, even in bona fide / contribution hours, is welcome by businesses of all sizes. This is not condoning or endorsing businesses to use the library. See the Disclaimer below.
+Original project contributors retain their respective copyright notices. See the license information below.
 
-# Sponsor
-
-If you'd like to financially support this project, you can do so by supporting the current maintainer [here](https://purpshell.dev/sponsor).
-
-# Disclaimer
-> [!CAUTION]
-> This project is not affiliated, associated, authorized, endorsed by, or in any way officially connected with WhatsApp or any of its subsidiaries or its affiliates.
-> The official WhatsApp website can be found at whatsapp.com. "WhatsApp" as well as related names, marks, emblems and images are registered trademarks of their respective owners.
->
-> The maintainers of Baileys do not in any way condone the use of this application in practices that violate the Terms of Service of WhatsApp. The maintainers of this application call upon the personal responsibility of its users to use this application in a fair way, as it is intended to be used.
-> Use at your own discretion. Do not spam people with this. We discourage any stalkerware, bulk or automated messaging usage.
-
-# License
-Copyright (c) 2025 Rajeh Taher/WhiskeySockets
-
-Licensed under the MIT License:
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-Thus, the maintainers of the project can't be held liable for any potential misuse of this project.
+---
