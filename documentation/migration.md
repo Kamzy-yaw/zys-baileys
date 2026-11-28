@@ -13,20 +13,65 @@ Existing projects may require adjustments depending on the version of Baileys th
 Before making changes:
 
 1. Back up your existing project.
-2. Back up your WhatsApp authentication/session data.
+2. Back up your WhatsApp authentication/session data securely. Do not assume credentials from every Baileys release or fork can be reused without verification.
 3. Review your current Baileys version.
 4. Check whether your project uses custom patches or third-party extensions.
-5. Review the ZysBaileys documentation for experimental features.
+5. Confirm your runtime meets the package requirement: Node.js 20 or later.
+6. Review the ZysBaileys documentation for experimental features.
 
 ## Installation
 
-Install ZysBaileys using the installation instructions in the main README.
+The package name remains `@whiskeysockets/baileys`. Install the repository's current GitHub version with npm:
 
-Do not assume that replacing the package name alone is sufficient for every project.
+```bash
+npm install github:Kamzy-yaw/zys-baileys
+```
+
+The README also documents adding the GitHub spec under `@whiskeysockets/baileys` in `package.json`. The package's `prepare` script builds the project when installed from Git. The main import remains:
+
+```ts
+import makeWASocket, { useMultiFileAuthState } from '@whiskeysockets/baileys'
+```
+
+Use the GitHub repository URL and package name above; simply renaming the dependency to a different package name is not part of this migration.
+
+## Update the Connection Setup
+
+The core socket, authentication, and event pattern remains familiar. For example, this uses the public socket and auth exports:
+
+```ts
+import makeWASocket, { useMultiFileAuthState } from '@whiskeysockets/baileys'
+
+const { state, saveCreds } = await useMultiFileAuthState('./auth_info')
+const sock = makeWASocket({ auth: state })
+
+sock.ev.on('creds.update', saveCreds)
+sock.ev.on('connection.update', ({ connection, qr, lastDisconnect }) => {
+  if (qr) console.log('Scan this QR code to log in:', qr)
+  if (connection === 'open') console.log('WhatsApp connection opened')
+  if (connection === 'close') console.error('WhatsApp connection closed:', lastDisconnect?.error)
+})
+
+sock.ev.on('messages.upsert', ({ messages, type }) => {
+  if (type === 'notify') {
+    for (const message of messages) {
+      console.log('Received message:', message.key.id)
+    }
+  }
+})
+```
+
+Send ordinary messages through the existing `sendMessage()` pattern:
+
+```ts
+await sock.sendMessage(jid, { text: 'Hello' })
+```
+
+This example demonstrates the current API shape; add your application's pairing, reconnection, logging, and message-processing policies as needed. Keep the authentication directory private.
 
 ## API Compatibility
 
-ZysBaileys retains much of its upstream Baileys foundation, but compatibility should be checked against the exact version and implementation being used.
+The current source retains familiar Baileys entry points such as the default `makeWASocket` export, `useMultiFileAuthState`, `sock.ev`, and `sock.sendMessage()`. This supports carrying over many core Baileys examples, but does not establish complete compatibility with every upstream release, fork, plugin, or internal API. Check examples against the installed package's public exports and types, then verify your application's flow with the version you install.
 
 Pay special attention to:
 
@@ -36,36 +81,36 @@ Pay special attention to:
 - Custom message types.
 - Third-party plugins and extensions.
 
+Code that depends on upstream internals, custom patches, or APIs added in a different Baileys version may need adaptation. The repository is an experimental fork, so test your normal login, reconnect, receive, and send paths before switching production traffic.
+
 ## Additional Features
 
-ZysBaileys includes additional message capabilities:
+ZysBaileys includes these additional message capabilities. They are experimental, not drop-in replacements for ordinary text messages; review each feature's API and limitations before adopting it:
 
-- [Rich Response](rich-response.md)
-- [HTML App](html-app.md)
-- [Native Flow](native-flow.md)
-
-Some of these features are experimental and may have client-side compatibility limitations.
+- [Rich Response](rich-response.md) — experimental structured content; rendering may vary by WhatsApp client.
+- [HTML App](html-app.md) — experimental HTML content sent to recipient devices; Android rendering for this implementation is unverified, and client restrictions may apply.
+- [Native Flow](native-flow.md) — experimental interactive messages; successful button rendering and interaction are unconfirmed, with previous manual reports of display failures on Desktop and mobile.
 
 ## Migration Checklist
 
 - [ ] Back up the existing project.
 - [ ] Back up authentication/session data.
 - [ ] Install ZysBaileys.
-- [ ] Review import paths and package references.
+- [ ] Confirm imports use `@whiskeysockets/baileys` and public exports available in the installed version.
 - [ ] Verify existing message-sending functionality.
-- [ ] Test authentication and reconnection.
+- [ ] Verify authentication using a protected backup and test reconnection behavior.
 - [ ] Test custom plugins and integrations.
-- [ ] Review experimental feature limitations.
+- [ ] Review experimental feature limitations before using them.
 
 ## Troubleshooting
 
 If something does not work after migration:
 
-1. Check the installed ZysBaileys version.
+1. Check the installed package version and confirm Node.js is 20 or later.
 2. Review the terminal output and error messages.
-3. Verify that your dependencies are compatible.
+3. Confirm the GitHub dependency resolved to the intended repository and that npm completed the package build.
 4. Test the affected feature with a minimal example.
-5. Check the repository for known issues or updates.
+5. Check the repository's issues and current documentation for known limitations.
 
 ## Important Notes
 
