@@ -1,5 +1,9 @@
  <div align="center">
-  <img src="../zysbaileys-banner.png" alt="ZysBaileys" width="100%" />
+  <img
+  src="https://raw.githubusercontent.com/Kamzy-yaw/zys-baileys/refs/heads/feature/rich-response/zysbaileys-banner.png"
+  alt="ZysBaileys"
+  width="100%"
+/>
   
   <h3>Extending WhatsApp Web Experiences.</h3>
 
