@@ -1,9 +1,9 @@
  <div align="center">
   <img
-  src="https://raw.githubusercontent.com/Kamzy-yaw/zys-baileys/refs/heads/feature/rich-response/zysbaileys-banner.png"
-  alt="ZysBaileys"
-  width="100%"
-/>
+    src="https://raw.githubusercontent.com/Kamzy-yaw/zys-baileys/refs/heads/feature/rich-response/zysbaileys-banner.png"
+    alt="ZysBaileys"
+    width="100%"
+  />
   
   <h3>Extending WhatsApp Web Experiences.</h3>
 
@@ -35,6 +35,18 @@ This fork explores additional messaging capabilities, custom message structures,
 - **Native Flow** — Experimental support for interactive native-flow messages.
 - **Baileys Compatibility** — Built on the Baileys codebase and its existing messaging architecture.
 
+## Documentation
+
+Explore the detailed documentation for each feature:
+
+| Documentation | Description |
+| --- | --- |
+| [Rich Response](../documentation/rich-response.md) | Structured messages, code blocks, tables, and links. |
+| [HTML App](../documentation/html-app.md) | Experimental HTML-based interactive experiences. |
+| [Native Flow](../documentation/native-flow.md) | Experimental native-flow interactive messages. |
+| [Migration Guide](../documentation/migration.md) | Guide for migrating existing Baileys projects to ZysBaileys. |
+
+For implementation details, examples, and limitations, refer to the corresponding documentation.
 
 ## Rich Response
 
@@ -129,7 +141,6 @@ await sock.sendMessage(jid, {
 
 **Note:** Rich Response rendering may vary depending on the WhatsApp client and version. Test compatibility with your target devices.
 
-
 ## Installation
 
 Install ZysBaileys directly from GitHub:
@@ -164,8 +175,6 @@ sock.ev.on('connection.update', (update) => {
 
 For authentication, message handling, and advanced usage, refer to the documentation inherited from the original Baileys project.
 
-
-
 ## Project Status
 
 ZysBaileys is actively experimental. Features may change, behave differently across WhatsApp clients, or require further testing.
@@ -175,7 +184,6 @@ ZysBaileys is actively experimental. Features may change, behave differently acr
 ZysBaileys is an unofficial, independently maintained fork. It is not affiliated with, endorsed by, or officially connected to WhatsApp, Meta, or WhiskeySockets.
 
 Use this project responsibly and comply with WhatsApp's Terms of Service. Do not use it for spam, abusive automation, or unauthorized activities.
-
 
 ## Credits
 
